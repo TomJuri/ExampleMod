@@ -86,10 +86,6 @@ tasks {
     processResources {
         inputs.property("modversion", version)
     }
-
-    withType<JavaCompile> {
-        options.release.set(8)
-    }
 }
 
 java {
@@ -97,6 +93,5 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-kotlin {
-    jvmToolchain(8)
-}
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+kotlin.jvmToolchain(8)
