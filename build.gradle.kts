@@ -85,6 +85,9 @@ tasks {
 
     processResources {
         inputs.property("version", version)
+        filesMatching(listOf("mcmod.info")) {
+            expand(mapOf("version" to version))
+        }
     }
 }
 
