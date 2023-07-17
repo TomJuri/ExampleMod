@@ -84,7 +84,7 @@ tasks {
     }
 
     processResources {
-        inputs.property("modversion", version)
+        inputs.property("version", version)
     }
 }
 
