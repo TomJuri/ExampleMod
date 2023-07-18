@@ -35,9 +35,9 @@ dependencies {
     embed("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
 }
 
-//blossom {
-  //  replaceToken("%%VERSION%%", version)
-//}
+blossom {
+    replaceToken("%%VERSION%%", version)
+}
 
 loom {
     runConfigs {
