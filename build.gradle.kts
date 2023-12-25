@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.9.0"
+    id("java")
     id("cc.polyfrost.loom") version "0.10.0.5"
     id("dev.architectury.architectury-pack200") version "0.1.3"
     id("com.github.johnrengelman.shadow") version "8.1.1"
@@ -31,8 +31,6 @@ dependencies {
     annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT:processor")
 
     modRuntimeOnly("me.djtheredstoner:DevAuth-forge-legacy:1.1.2")
-
-    embed("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
 }
 
 blossom {
@@ -79,7 +77,9 @@ tasks {
     }
 
     shadowJar {
-        relocate("kotlin", "de.tomjuri.examplemod.relocate.kotlin")
+        isEnableRelocation = true
+        relocationPrefix = "de.tomjuri.examplemod.relocate"
+        relocate("cc.polyfrost.oneconfig", "cc.polyfrost.oneconfig")
         configurations = listOf(embed)
     }
 
@@ -97,4 +97,3 @@ java {
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(8)
-kotlin.jvmToolchain(8)
