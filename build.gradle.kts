@@ -1,7 +1,6 @@
 plugins {
-    id("java")
-    id("cc.polyfrost.loom") version "0.10.0.5"
-    id("dev.architectury.architectury-pack200") version "0.1.3"
+    kotlin("jvm") version "1.9.23"
+    id("com.github.TomJuri.NebulaGradle") version "-SNAPSHOT"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("net.kyori.blossom") version "1.3.1"
 }
@@ -9,51 +8,27 @@ plugins {
 group = "de.tomjuri"
 version = "1.0.0"
 
-repositories {
-    mavenCentral()
-    maven("https://repo.polyfrost.cc/releases")
-    maven("https://repo.spongepowered.org/repository/maven-public")
-    maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
-}
+val embedImpl: Configuration by configurations.creating
+configurations.implementation.get().extendsFrom(embedImpl)
 
-val embed: Configuration by configurations.creating
-configurations.implementation.get().extendsFrom(embed)
+val embedCompile: Configuration by configurations.creating
+configurations.compileOnly.get().extendsFrom(embedCompile)
 
 dependencies {
-    minecraft("com.mojang:minecraft:1.8.9")
-    mappings("de.oceanlabs.mcp:mcp_stable:22-1.8.9")
-    forge("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
-
-    compileOnly("cc.polyfrost:oneconfig-1.8.9-forge:0.2.0-alpha+")
-    embed("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-beta+")
-
-    compileOnly("org.spongepowered:mixin:0.8.5-SNAPSHOT")
-    annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT:processor")
-
-    modRuntimeOnly("me.djtheredstoner:DevAuth-forge-legacy:1.1.2")
+    embedCompile("org.spongepowered:mixin:0.8.5-SNAPSHOT")
 }
 
 blossom {
     replaceToken("%%VERSION%%", version)
 }
 
-loom {
-    runConfigs {
-        named("client") {
-            ideConfigGenerated(true)
-        }
+nebulagradle {
+    launchConfig {
+        javaExecutable = "YOUR_JAVA_8_PATH"
+        cliArg = "--mixin mixins.examplemod.json"
     }
-
-    launchConfigs {
-        getByName("client") {
-            arg("--tweakClass", "cc.polyfrost.oneconfig.loader.stage0.LaunchWrapperTweaker")
-            property("devauth.enabled", "true")
-        }
-    }
-
-    forge {
-        pack200Provider.set(dev.architectury.pack200.java.Pack200Adapter())
-        mixinConfig("mixins.examplemod.json")
+    mixin {
+        name = "examplemod"
     }
 }
 
@@ -64,23 +39,20 @@ tasks {
                         "ModSide" to "CLIENT",
                         "TweakOrder" to "0",
                         "ForceLoadAsMod" to true,
-                        "TweakClass" to "cc.polyfrost.oneconfig.loader.stage0.LaunchWrapperTweaker",
                         "MixinConfigs" to "mixins.examplemod.json"
                 )
         )
         dependsOn(shadowJar)
     }
 
-    remapJar {
+    remapMod {
         input.set(shadowJar.get().archiveFile)
-        archiveClassifier.set("")
     }
 
     shadowJar {
         isEnableRelocation = true
         relocationPrefix = "de.tomjuri.examplemod.relocate"
-        relocate("cc.polyfrost.oneconfig", "cc.polyfrost.oneconfig")
-        configurations = listOf(embed)
+        configurations = listOf(embedImpl, embedCompile)
     }
 
     processResources {
@@ -97,3 +69,4 @@ java {
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+kotlin.jvmToolchain(8)

@@ -1,11 +1,13 @@
 pluginManagement {
+    resolutionStrategy {
+        eachPlugin {
+            if(requested.id.toString() == "com.github.TomJuri.NebulaGradle")
+                useModule("com.github.TomJuri:NebulaGradle:-SNAPSHOT")
+        }
+    }
     repositories {
-        maven("https://repo.polyfrost.cc/releases")
         gradlePluginPortal()
-        mavenCentral()
-        maven("https://maven.fabricmc.net")
-        maven("https://maven.architectury.dev")
-        maven("https://maven.minecraftforge.net")
+        maven("https://jitpack.io")
     }
 }
 
